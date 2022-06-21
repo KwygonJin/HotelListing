@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "OrqXKxR9fpQj7qWazV8dHSbREhFAjS0kITnWb6wIDGTQTKdBFH9fmRIsjsqrdukPSzSRLJK0pY0kLuUsYy+vzg==",
+  "dgSpecHash": "Za9ouTP4Ij68mNYhGRad9sEJxbRDO0BiY2HbMdcJqfVdo0QON2NWdOXckpmby8r2WWPMkJUc/NP5cbsMVH7PNg==",
   "success": true,
   "projectFilePath": "C:\\Users\\KwygonJin\\source\\repos\\HotelListing\\HotelListing\\HotelListing.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\KwygonJin\\.nuget\\packages\\automapper\\11.0.0\\automapper.11.0.0.nupkg.sha512",
+    "C:\\Users\\KwygonJin\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",
     "C:\\Users\\KwygonJin\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\KwygonJin\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.6\\microsoft.aspnetcore.authentication.jwtbearer.6.0.6.nupkg.sha512",
     "C:\\Users\\KwygonJin\\.nuget\\packages\\microsoft.aspnetcore.authentication.openidconnect\\6.0.6\\microsoft.aspnetcore.authentication.openidconnect.6.0.6.nupkg.sha512",
