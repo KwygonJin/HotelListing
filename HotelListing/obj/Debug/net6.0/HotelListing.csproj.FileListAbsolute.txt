@@ -150,3 +150,5 @@ C:\Users\KwygonJin\source\repos\HotelListing\HotelListing\obj\Debug\net6.0\Hotel
 C:\Users\KwygonJin\source\repos\HotelListing\HotelListing\obj\Debug\net6.0\ref\HotelListing.dll
 C:\Users\KwygonJin\source\repos\HotelListing\HotelListing\bin\Debug\net6.0\AutoMapper.dll
 C:\Users\KwygonJin\source\repos\HotelListing\HotelListing\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\KwygonJin\source\repos\HotelListing\HotelListing\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\KwygonJin\source\repos\HotelListing\HotelListing\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
