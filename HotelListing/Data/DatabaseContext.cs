@@ -1,14 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelListing.Data
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IdentityDbContext<ApiUser>
     {
         public DatabaseContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {}
 
+        public DbSet<Country> Countries { get; set; }
+        public DbSet<Hotel> Hotels { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Country>().HasData(
                 new Country
                 {
@@ -36,7 +41,8 @@ namespace HotelListing.Data
                     Name = "Hotel Ukraine",
                     Address = "Lviv",
                     CountryId = 1,
-                    Rating = 4.5
+                    Rating = 4.5,
+                    Price = 500
                 },
                 new Hotel
                 {
@@ -44,7 +50,8 @@ namespace HotelListing.Data
                     Name = "Hotel Jamaica",
                     Address = "Jamaica",
                     CountryId = 2,
-                    Rating = 4.8
+                    Rating = 4.8,
+                    Price = 4000
                 },
                 new Hotel
                 {
@@ -52,12 +59,10 @@ namespace HotelListing.Data
                     Name = "Hotel Bahamas",
                     Address = "Bahamas",
                     CountryId = 3,
-                    Rating = 5
+                    Rating = 5,
+                    Price = 7000
                 }
-             ); 
+             );
         }
-
-        public DbSet<Country> Countries { get; set; }
-        public DbSet<Hotel> Hotels { get; set; }
     }
 }

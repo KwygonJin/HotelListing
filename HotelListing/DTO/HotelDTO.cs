@@ -16,12 +16,18 @@ namespace HotelListing.DTO
         [Range(1, 5)]
         public double Rating { get; set; }
         [Required]
+        [Range(0, 999999)]
+        public decimal Price { get; set; }
+
+        [Required]
         public int CountryId { get; set; }
     }
 
     public class HotelDTO : CreateHotelDTO
     {
         public int Id { get; set; }
-        public CountryDTO country { get; set; }
+        public CountryDTO Country { get; set; }
+        public decimal SumForWeek { get; set; }
+        public string DescriptionSum { get; set; }
     }
 }
