@@ -15,6 +15,9 @@ namespace HotelListing.Configurations
                 .ForMember(dest => dest.DescriptionSum, opt => opt.MapFrom(src => "Price * 7 nigths!"))
                 .ReverseMap();
             CreateMap<Hotel, CreateHotelDTO>().ReverseMap();
+            CreateMap<ApiUser, UserDTO>()
+                .ReverseMap()
+                .ForPath(s => s.UserName, opt => opt.MapFrom(src => src.Email));
         }
     }
 }
