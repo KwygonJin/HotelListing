@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using HotelListing.DTO;
-using HotelListing.IRepository;
+using HotelListing.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HotelListing.Controllers
@@ -15,51 +11,31 @@ namespace HotelListing.Controllers
     [ApiController]
     public class HotelController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<HotelController> _logger;
-        private readonly IMapper _mapper;
+        private readonly IHotelService _hotelService;
 
-        public HotelController(IUnitOfWork unitOfWork, ILogger<HotelController> logger, IMapper mapper)
+        public HotelController(IHotelService hotelService)
         {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-            _mapper = mapper;
+            _hotelService = hotelService;
         }
 
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetHotels()
         {
-            try
-            {
-                var hotels = await _unitOfWork.Hotels.GetAll(include: q => q.Include(x => x.Country));
-                var results = _mapper.Map<IList<HotelDTO>>(hotels);
-                return Ok(results);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(GetHotels)}");
-                return StatusCode(500, "Internal server error. Please try again");
-            }
+            var results = await _hotelService.GetHotels();
+            return Ok(results);
         }
 
+        [Authorize]
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetHotelById(int id)
         {
-            try
-            {
-                var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id, include: q => q.Include(x => x.Country));
-                var result = _mapper.Map<HotelDTO>(hotel);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(GetHotelById)}");
-                return StatusCode(500, "Internal server error. Please try again");
-            }
+            var result = await _hotelService.GetHotelById(id);
+            return Ok(result);
         }
     }
 }
