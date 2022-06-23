@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HotelListing.DTO;
 using HotelListing.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +30,7 @@ namespace HotelListing.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetHotel")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetHotelById(int id)
@@ -37,5 +38,17 @@ namespace HotelListing.Controllers
             var result = await _hotelService.GetHotelById(id);
             return Ok(result);
         }
+
+        [Authorize(Roles = "Administrator")] 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateHotel([FromBody] CreateHotelDTO HotelDTO)
+        {
+            var hotel = await _hotelService.CreateHotel(HotelDTO, ModelState);
+            return CreatedAtRoute("GetHotel", new { id = hotel.Id }, hotel); ;
+        }
+
     }
 }

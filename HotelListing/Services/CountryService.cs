@@ -3,6 +3,7 @@ using HotelListing.Data;
 using HotelListing.DTO;
 using HotelListing.Interfaces;
 using HotelListing.IRepository;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,7 +25,7 @@ namespace HotelListing.Services
             _logger = logger;
             _mapper = mapper;
         }
-        
+
         public async Task<IList<CountryDTO>> GetCountries()
         {
             try
@@ -49,6 +50,28 @@ namespace HotelListing.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something went wrong in the {nameof(GetCountryById)}");
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public async Task<Country> CreateCountry(CreateCountryDTO CountryDTO, ModelStateDictionary modelState)
+        {
+            if (!modelState.IsValid)
+            {
+                _logger.LogError($"Invalid POST attempt in {nameof(CreateCountry)}");
+                throw new System.NotImplementedException();
+            }
+            try
+            {
+                var country = _mapper.Map<Country>(CountryDTO);
+                await _unitOfWork.Countries.Insert(country);
+                await _unitOfWork.Save();
+
+                return country;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(CreateCountry)}");
                 throw new System.NotImplementedException();
             }
         }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HotelListing.DTO;
 using HotelListing.Interfaces;
 using HotelListing.IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -31,13 +32,25 @@ namespace HotelListing.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetCountry")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCountryById(int id)
         {
             var result = await _countryService.GetCountryById(id);
             return Ok(result);
+        }
+
+        //[Authorize(Roles = "Administrator")]
+        [Authorize]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateCountry([FromBody] CreateCountryDTO countryDTO)
+        {
+            var country = await _countryService.CreateCountry(countryDTO, ModelState);
+            return CreatedAtRoute("GetCountry", new { id = country.Id }, country); ;
         }
     }
 }
