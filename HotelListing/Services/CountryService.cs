@@ -71,5 +71,50 @@ namespace HotelListing.Services
                 throw new System.NotImplementedException();
             }
         }
+
+        public async Task<Country> UpdateCountry(int id, UpdateCountryDTO countryDTO)
+        {
+            try
+            {
+                var country = await _unitOfWork.Countries.Get(q => q.Id == id);
+                if (country == null)
+                {
+                    _logger.LogError($"Invalid UPDATE attempt in the {nameof(UpdateCountry)}");
+                    throw new System.NotImplementedException();
+                }
+
+                _mapper.Map(countryDTO, country);
+                _unitOfWork.Countries.Update(country);
+                await _unitOfWork.Save();
+
+                return country;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(UpdateCountry)}");
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public async Task DeleteCountry(int id)
+        {
+            try
+            {
+                var country = await _unitOfWork.Countries.Get(q => q.Id == id);
+                if (country == null)
+                {
+                    _logger.LogError($"Invalid Delete attempt in the {nameof(DeleteCountry)}");
+                    throw new System.NotImplementedException();
+                }
+
+                await _unitOfWork.Countries.Delete(id);
+                await _unitOfWork.Save();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(DeleteCountry)}");
+                throw new System.NotImplementedException();
+            }
+        }
     }
 }

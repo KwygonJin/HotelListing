@@ -9,6 +9,6 @@ namespace HotelListing.Interfaces
     public interface IAccountService
     {
         public Task Register(UserDTO userDTO, ModelStateDictionary modelState);
-        public Task Login(LoginUserDTO userDTO, ModelStateDictionary modelState);
+        public Task<string> Login(LoginUserDTO userDTO);
     }
 }

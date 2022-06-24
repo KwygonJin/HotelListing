@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace HotelListing.Controllers
@@ -30,8 +31,15 @@ namespace HotelListing.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCountries()
         {
-            var results = await _countryService.GetCountries();
-            return Ok(results);
+            try
+            {
+                var results = await _countryService.GetCountries();
+                return Ok(results);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [Authorize]
@@ -40,8 +48,15 @@ namespace HotelListing.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCountryById(int id)
         {
-            var result = await _countryService.GetCountryById(id);
-            return Ok(result);
+            try
+            {
+                var result = await _countryService.GetCountryById(id);
+                return Ok(result);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         //[Authorize(Roles = "Administrator")]
@@ -57,16 +72,65 @@ namespace HotelListing.Controllers
                 _logger.LogError($"Invalid POST attempt in {nameof(CreateCountry)}");
                 return BadRequest();
             }
-            
-            var country = await _countryService.CreateCountry(countryDTO);
-            return CreatedAtRoute("GetCountry", new { id = country.Id }, country); ;
+
+            try
+            {
+                var country = await _countryService.CreateCountry(countryDTO);
+                return CreatedAtRoute("GetCountry", new { id = country.Id }, country); 
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
-        //[Authorize]
-        //[HttpPut]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize]
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateCountry(int id, [FromBody] UpdateCountryDTO countryDTO)
+        {
+            if (!ModelState.IsValid || id < 1)
+            {
+                _logger.LogError($"Invalid Put attempt in {nameof(UpdateCountry)}");
+                return BadRequest();
+            }
+
+            try
+            {
+                var country = await _countryService.UpdateCountry(id, countryDTO);
+                return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteCountry(int id)
+        {
+            if (id < 1)
+            {
+                _logger.LogError($"Invalid Delete attempt in {nameof(DeleteCountry)}");
+                return BadRequest();
+            }
+
+            try
+            {
+                await _countryService.DeleteCountry(id);
+                return Ok();
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
 
     }
 }

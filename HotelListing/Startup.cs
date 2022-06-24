@@ -54,6 +54,7 @@ namespace HotelListing
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ICountryService, CountryService>();
             services.AddTransient<IHotelService, HotelService>();
+            services.AddTransient<IAccountService, AccountService>();
             services.AddScoped<IAuthManager, AuthManager>();
 
             services.AddSwaggerGen(c =>

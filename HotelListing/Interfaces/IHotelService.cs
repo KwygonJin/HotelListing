@@ -16,5 +16,7 @@ namespace HotelListing.Interfaces
         Task<Hotel> CreateHotel(CreateHotelDTO hotelDTO);
 
         Task<Hotel> UpdateHotel(int id, UpdateHotelDTO hotelDTO);
+
+        Task DeleteHotel(int id);
     }
 }

@@ -31,19 +31,8 @@ namespace HotelListing.Services
             _authManager = authManager;
         }
 
-        public async Task Login(LoginUserDTO userDTO, ModelStateDictionary modelState)
-        {
-
-        }
-
         public async Task Register(UserDTO userDTO, ModelStateDictionary modelState)
         {
-            _logger.LogInformation($"Registration Attempt for {userDTO.Email}");
-            if (!modelState.IsValid)
-            {
-                throw new System.NotImplementedException();
-            }
-            
             try
             {
                 var user = _mapper.Map<ApiUser>(userDTO);
@@ -63,6 +52,25 @@ namespace HotelListing.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something went wrong in the {nameof(Register)}");
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public async Task<string> Login(LoginUserDTO userDTO)
+        {
+            try
+            {
+                if (!await _authManager.ValidateUser(userDTO))
+                {
+                    _logger.LogError($"Not authorized in the {nameof(Login)}");
+                    throw new System.NotImplementedException();
+                }
+                string token = await _authManager.CreateToken();
+                return token;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(Login)}");
                 throw new System.NotImplementedException();
             }
         }

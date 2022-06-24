@@ -78,9 +78,11 @@ namespace HotelListing.Services
                 var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id);
                 if (hotel == null)
                 {
+                    _logger.LogError($"Invalid UPDATE attempt in the {nameof(UpdateHotel)}");
                     throw new System.NotImplementedException();
                 }
 
+                _mapper.Map(hotelDTO, hotel);
                 _unitOfWork.Hotels.Update(hotel);
                 await _unitOfWork.Save();
 
@@ -89,6 +91,27 @@ namespace HotelListing.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something went wrong in the {nameof(UpdateHotel)}");
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public async Task DeleteHotel(int id)
+        {
+            try
+            {
+                var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id);
+                if (hotel == null)
+                {
+                    _logger.LogError($"Invalid Delete attempt in the {nameof(DeleteHotel)}");
+                    throw new System.NotImplementedException();
+                }
+
+                await _unitOfWork.Hotels.Delete(id);
+                await _unitOfWork.Save();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(DeleteHotel)}");
                 throw new System.NotImplementedException();
             }
         }
