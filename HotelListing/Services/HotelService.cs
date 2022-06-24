@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HotelListing.Data;
 using HotelListing.DTO;
+using HotelListing.DTO.Hotel;
 using HotelListing.Interfaces;
 using HotelListing.IRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -53,13 +54,8 @@ namespace HotelListing.Services
             }
         }
 
-        public async Task<Hotel> CreateHotel(CreateHotelDTO HotelDTO, ModelStateDictionary modelState)
+        public async Task<Hotel> CreateHotel(CreateHotelDTO HotelDTO)
         {
-            if (!modelState.IsValid)
-            {
-                _logger.LogError($"Invalid POST attempt in {nameof(CreateHotel)}");
-                throw new System.NotImplementedException();
-            }
             try
             {
                 var hotel = _mapper.Map<Hotel>(HotelDTO);
@@ -71,6 +67,28 @@ namespace HotelListing.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something went wrong in the {nameof(CreateHotel)}");
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public async Task<Hotel> UpdateHotel(int id, UpdateHotelDTO hotelDTO)
+        {
+            try
+            {
+                var hotel = await _unitOfWork.Hotels.Get(q => q.Id == id);
+                if (hotel == null)
+                {
+                    throw new System.NotImplementedException();
+                }
+
+                _unitOfWork.Hotels.Update(hotel);
+                await _unitOfWork.Save();
+
+                return hotel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(UpdateHotel)}");
                 throw new System.NotImplementedException();
             }
         }

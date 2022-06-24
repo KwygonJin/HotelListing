@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using HotelListing.Data;
 using HotelListing.DTO;
+using HotelListing.DTO.Country;
+using HotelListing.DTO.Hotel;
+using HotelListing.DTO.User;
 
 namespace HotelListing.Configurations
 {

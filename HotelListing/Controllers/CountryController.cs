@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HotelListing.DTO;
+using HotelListing.DTO.Country;
 using HotelListing.Interfaces;
 using HotelListing.IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,12 @@ namespace HotelListing.Controllers
     public class CountryController : ControllerBase
     {
         private readonly ICountryService _countryService;
+        private readonly ILogger<CountryController> _logger;
 
-        public CountryController(ICountryService countryService)
+        public CountryController(ICountryService countryService, ILogger<CountryController> logger)
         {
             _countryService = countryService;
+            _logger = logger;
         }
 
         [Authorize]
@@ -49,8 +52,21 @@ namespace HotelListing.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCountry([FromBody] CreateCountryDTO countryDTO)
         {
-            var country = await _countryService.CreateCountry(countryDTO, ModelState);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"Invalid POST attempt in {nameof(CreateCountry)}");
+                return BadRequest();
+            }
+            
+            var country = await _countryService.CreateCountry(countryDTO);
             return CreatedAtRoute("GetCountry", new { id = country.Id }, country); ;
         }
+
+        //[Authorize]
+        //[HttpPut]
+        //[ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
     }
 }

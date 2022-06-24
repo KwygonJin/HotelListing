@@ -1,5 +1,6 @@
 ﻿using HotelListing.Data;
 using HotelListing.DTO;
+using HotelListing.DTO.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

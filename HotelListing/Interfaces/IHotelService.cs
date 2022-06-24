@@ -1,5 +1,6 @@
 ﻿using HotelListing.Data;
 using HotelListing.DTO;
+using HotelListing.DTO.Hotel;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace HotelListing.Interfaces
 
         Task<HotelDTO> GetHotelById(int id);
 
-        Task<Hotel> CreateHotel(CreateHotelDTO hotelDTO, ModelStateDictionary modelState);
+        Task<Hotel> CreateHotel(CreateHotelDTO hotelDTO);
+
+        Task<Hotel> UpdateHotel(int id, UpdateHotelDTO hotelDTO);
     }
 }

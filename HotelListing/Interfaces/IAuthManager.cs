@@ -1,4 +1,5 @@
 ﻿using HotelListing.DTO;
+using HotelListing.DTO.User;
 using System.Threading.Tasks;
 
 namespace HotelListing.Services

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using HotelListing.Data;
-using HotelListing.DTO;
+using HotelListing.DTO.User;
 using HotelListing.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

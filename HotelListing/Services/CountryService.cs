@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HotelListing.Data;
 using HotelListing.DTO;
+using HotelListing.DTO.Country;
 using HotelListing.Interfaces;
 using HotelListing.IRepository;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -54,13 +55,8 @@ namespace HotelListing.Services
             }
         }
 
-        public async Task<Country> CreateCountry(CreateCountryDTO CountryDTO, ModelStateDictionary modelState)
+        public async Task<Country> CreateCountry(CreateCountryDTO CountryDTO)
         {
-            if (!modelState.IsValid)
-            {
-                _logger.LogError($"Invalid POST attempt in {nameof(CreateCountry)}");
-                throw new System.NotImplementedException();
-            }
             try
             {
                 var country = _mapper.Map<Country>(CountryDTO);
