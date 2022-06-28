@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HotelListing.Data;
 using HotelListing.DTO;
+using HotelListing.DTO.Mail;
 using HotelListing.DTO.User;
 using HotelListing.Interfaces;
 using HotelListing.IRepository;
@@ -19,60 +20,55 @@ namespace HotelListing.Services
         private readonly ILogger<AccountService> _logger;
         private readonly IMapper _mapper;
         private readonly IAuthManager _authManager;
+        private readonly IMailService _mailService;
 
         public AccountService(UserManager<ApiUser> userManager,
             ILogger<AccountService> logger,
             IMapper mapper,
-            IAuthManager authManager)
+            IAuthManager authManager, 
+            IMailService mailService)
         {
             _userManager = userManager;
             _logger = logger;
             _mapper = mapper;
             _authManager = authManager;
+            _mailService = mailService;
         }
 
-        public async Task Register(UserDTO userDTO, ModelStateDictionary modelState)
+        public async Task RegisterAsync(UserDTO userDTO, ModelStateDictionary modelState)
         {
-            try
-            {
-                var user = _mapper.Map<ApiUser>(userDTO);
-                var result = await _userManager.CreateAsync(user, userDTO.Password);
+            var user = _mapper.Map<ApiUser>(userDTO);
+            var result = await _userManager.CreateAsync(user, userDTO.Password);
 
-                if (!result.Succeeded)
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        modelState.AddModelError(error.Code, error.Description);
-                    }
-                    throw new System.NotImplementedException();
+                    modelState.AddModelError(error.Code, error.Description);
                 }
-
-                await _userManager.AddToRolesAsync(user, userDTO.Roles);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(Register)}");
                 throw new System.NotImplementedException();
             }
+
+            await _userManager.AddToRolesAsync(user, userDTO.Roles);
+
+            MailRequest request = new MailRequest
+            {
+                ToEmail = userDTO.Email,
+                Subject = "Registration!",
+                Body = "You successfully registred!"
+            };
+            await _mailService.SendEmailAsync(request);
         }
 
-        public async Task<string> Login(LoginUserDTO userDTO)
+        public async Task<string> LoginAsync(LoginUserDTO userDTO)
         {
-            try
+            if (!await _authManager.ValidateUserAsync(userDTO))
             {
-                if (!await _authManager.ValidateUser(userDTO))
-                {
-                    _logger.LogError($"Not authorized in the {nameof(Login)}");
-                    throw new System.NotImplementedException();
-                }
-                string token = await _authManager.CreateToken();
-                return token;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(Login)}");
+                _logger.LogError($"Not authorized in the {nameof(LoginAsync)}");
                 throw new System.NotImplementedException();
             }
+            string token = await _authManager.CreateTokenAsync();
+            return token;
         }
     }
 }

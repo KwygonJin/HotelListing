@@ -47,7 +47,7 @@ namespace HotelListing.Controllers
 
             try
             {
-                await _accountService.Register(userDTO, ModelState);
+                await _accountService.RegisterAsync(userDTO, ModelState);
 
                 return Ok();
             }
@@ -72,7 +72,7 @@ namespace HotelListing.Controllers
 
             try
             {
-                var token = await _accountService.Login(userDTO);
+                var token = await _accountService.LoginAsync(userDTO);
                 return Ok(new { Token = token });
             }
             catch

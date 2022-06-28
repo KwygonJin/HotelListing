@@ -9,14 +9,16 @@ namespace HotelListing.Interfaces
 {
     public interface IHotelService
     {
-        Task<IList<HotelDTO>> GetHotels();
+        Task<IList<HotelDTO>> GetHotelsAsync();
 
-        Task<HotelDTO> GetHotelById(int id);
+        Task<IList<HotelDTO>> GetHotelsAsync(RequestParams requestParams);
 
-        Task<Hotel> CreateHotel(CreateHotelDTO hotelDTO);
+        Task<HotelDTO> GetHotelByIdAsync(int id);
 
-        Task<Hotel> UpdateHotel(int id, UpdateHotelDTO hotelDTO);
+        Task<Hotel> CreateHotelAsync(CreateHotelDTO hotelDTO);
 
-        Task DeleteHotel(int id);
+        Task<Hotel> UpadateHotelAsync(int id, UpdateHotelDTO hotelDTO);
+
+        Task DeleteHotelAsync(int id);
     }
 }

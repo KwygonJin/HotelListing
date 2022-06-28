@@ -9,14 +9,16 @@ namespace HotelListing.Interfaces
 {
     public interface ICountryService
     {
-        Task<IList<CountryDTO>> GetCountries();
+        Task<IList<CountryDTO>> GetCountriesAsync();
 
-        Task<CountryDTO> GetCountryById(int id);
+        Task<IList<CountryDTO>> GetCountriesAsync(RequestParams requestParams);
 
-        Task<Country> CreateCountry(CreateCountryDTO countryDTO);
+        Task<CountryDTO> GetCountryByIdAsync(int id);
 
-        Task<Country> UpdateCountry(int id, UpdateCountryDTO countryDTO);
+        Task<Country> CreateCountryAsync(CreateCountryDTO countryDTO);
 
-        Task DeleteCountry(int id);
+        Task<Country> UpdateCountryAsync(int id, UpdateCountryDTO countryDTO);
+
+        Task DeleteCountryAsync(int id);
     }
 }
