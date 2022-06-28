@@ -58,6 +58,9 @@ namespace HotelListing.Services
                 Body = "You successfully registred!"
             };
             await _mailService.SendEmailAsync(request);
+
+            request.Body = "You successfully registred! Default SMTP!";
+            await _mailService.SendEmailDefaultSmtpAsync(request);
         }
 
         public async Task<string> LoginAsync(LoginUserDTO userDTO)

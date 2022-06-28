@@ -40,3 +40,5 @@ msbuild.wrn
 .vs
 /HotelListing/appsettings.json
 /HotelListing/appsettings.Development.json
+/.vs
+/HotelListing/obj

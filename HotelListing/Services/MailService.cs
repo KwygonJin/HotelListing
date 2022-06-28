@@ -6,6 +6,8 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System.IO;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace HotelListing.Services
@@ -44,11 +46,53 @@ namespace HotelListing.Services
             }
             builder.HtmlBody = mailRequest.Body;
             email.Body = builder.ToMessageBody();
-            using var smtp = new SmtpClient();
+            using var smtp = new MailKit.Net.Smtp.SmtpClient();
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
             smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
+        }
+       
+        public async Task SendEmailDefaultSmtpAsync(MailRequest mailRequest)
+        {
+            var smtpClient = new System.Net.Mail.SmtpClient(_mailSettings.Host)
+            {
+                Port = _mailSettings.Port,
+                Credentials = new NetworkCredential(_mailSettings.Mail, _mailSettings.Password),
+                EnableSsl = true,
+            };
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(_mailSettings.Mail),
+                Subject = mailRequest.Subject,
+                Body = mailRequest.Body,
+                IsBodyHtml = true,
+                BodyEncoding = System.Text.Encoding.UTF8,
+                SubjectEncoding = System.Text.Encoding.UTF8
+            };
+            mailMessage.To.Add(mailRequest.ToEmail);
+
+            if (mailRequest.Attachments != null)
+            {
+                byte[] fileBytes;
+                foreach (var file in mailRequest.Attachments)
+                {
+                    if (file.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            file.CopyTo(ms);
+                            fileBytes = ms.ToArray();
+                        }
+                        mailMessage.Attachments.Add(new Attachment(new MemoryStream(fileBytes), file.FileName, file.ContentType));
+                    }
+                }
+            }
+            await smtpClient.SendMailAsync(mailMessage);
+         
+            mailMessage.Dispose();
+            smtpClient.Dispose();
         }
     }
 }
