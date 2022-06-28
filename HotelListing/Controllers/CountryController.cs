@@ -3,6 +3,7 @@ using HotelListing.DTO;
 using HotelListing.DTO.Country;
 using HotelListing.Interfaces;
 using HotelListing.IRepository;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,36 +28,28 @@ namespace HotelListing.Controllers
 
         [Authorize]
         [HttpGet]
+        //[ResponseCache(Duration = 60)]
+        //[ResponseCache(CacheProfileName = "120SecondsDuration")]       
+        //[HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 90)]
+        //[HttpCacheValidation(MustRevalidate = false)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCountries()
+        public async Task<IActionResult> GetCountries([FromQuery] RequestParams requestParams)
         {
-            try
-            {
-                var results = await _countryService.GetCountries();
-                return Ok(results);
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var results = await _countryService.GetCountriesAsync(requestParams);
+            return Ok(results);
         }
 
         [Authorize]
         [HttpGet("{id:int}", Name = "GetCountry")]
+        [ResponseCache(CacheProfileName = "120SecondsDuration")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCountryById(int id)
         {
-            try
-            {
-                var result = await _countryService.GetCountryById(id);
-                return Ok(result);
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var result = await _countryService.GetCountryByIdAsync(id);
+            return Ok(result);
         }
 
         //[Authorize(Roles = "Administrator")]
@@ -73,21 +66,15 @@ namespace HotelListing.Controllers
                 return BadRequest();
             }
 
-            try
-            {
-                var country = await _countryService.CreateCountry(countryDTO);
-                return CreatedAtRoute("GetCountry", new { id = country.Id }, country); 
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var country = await _countryService.CreateCountryAsync(countryDTO);
+            return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
         }
 
         [Authorize]
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateCountry(int id, [FromBody] UpdateCountryDTO countryDTO)
         {
@@ -97,21 +84,15 @@ namespace HotelListing.Controllers
                 return BadRequest();
             }
 
-            try
-            {
-                var country = await _countryService.UpdateCountry(id, countryDTO);
-                return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            var country = await _countryService.UpdateCountryAsync(id, countryDTO);
+            return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
         }
 
         [Authorize]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteCountry(int id)
         {
@@ -121,15 +102,8 @@ namespace HotelListing.Controllers
                 return BadRequest();
             }
 
-            try
-            {
-                await _countryService.DeleteCountry(id);
-                return Ok();
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            await _countryService.DeleteCountryAsync(id);
+            return Ok();
         }
 
     }
