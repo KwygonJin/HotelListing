@@ -26,95 +26,64 @@ namespace HotelListing.Services
             _logger = logger;
             _mapper = mapper;
         }
-
-        public async Task<IList<CountryDTO>> GetCountries()
+        public async Task<IList<CountryDTO>> GetCountriesAsync()
         {
-            try
-            {
-                var countries = await _unitOfWork.Countries.GetAll(include: q => q.Include(x => x.Hotels));
-                return _mapper.Map<IList<CountryDTO>>(countries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(GetCountries)}");
-                throw new System.NotImplementedException();
-            }
+            var countries = await _unitOfWork.Countries.GetAllAsync(include: q => q.Include(x => x.Hotels));
+            return _mapper.Map<IList<CountryDTO>>(countries);
         }
 
-        public async Task<CountryDTO> GetCountryById(int id)
+        public async Task<IList<CountryDTO>> GetCountriesAsync(RequestParams requestParams)
         {
-            try
-            {
-                var country = await _unitOfWork.Countries.Get(q => q.Id == id, include: q => q.Include(x => x.Hotels));
-                return _mapper.Map<CountryDTO>(country);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(GetCountryById)}");
-                throw new System.NotImplementedException();
-            }
+            var countries = await _unitOfWork.Countries.GetPagedAsync(requestParams, q => q.Include(x => x.Hotels));
+            return _mapper.Map<IList<CountryDTO>>(countries);
         }
 
-        public async Task<Country> CreateCountry(CreateCountryDTO CountryDTO)
+        public async Task<CountryDTO> GetCountryByIdAsync(int id)
         {
-            try
-            {
-                var country = _mapper.Map<Country>(CountryDTO);
-                await _unitOfWork.Countries.Insert(country);
-                await _unitOfWork.Save();
+            var country = await _unitOfWork.Countries.GetAsync(q => q.Id == id, include: q => q.Include(x => x.Hotels));
+            if (country == null)
+                throw new KeyNotFoundException();
 
-                return country;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(CreateCountry)}");
-                throw new System.NotImplementedException();
-            }
+            return _mapper.Map<CountryDTO>(country);
         }
 
-        public async Task<Country> UpdateCountry(int id, UpdateCountryDTO countryDTO)
+        //some com
+        public async Task<Country> CreateCountryAsync(CreateCountryDTO CountryDTO)
         {
-            try
-            {
-                var country = await _unitOfWork.Countries.Get(q => q.Id == id);
-                if (country == null)
-                {
-                    _logger.LogError($"Invalid UPDATE attempt in the {nameof(UpdateCountry)}");
-                    throw new System.NotImplementedException();
-                }
+            var country = _mapper.Map<Country>(CountryDTO);
+            await _unitOfWork.Countries.InsertAsync(country);
+            await _unitOfWork.SaveAsync();
 
-                _mapper.Map(countryDTO, country);
-                _unitOfWork.Countries.Update(country);
-                await _unitOfWork.Save();
-
-                return country;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(UpdateCountry)}");
-                throw new System.NotImplementedException();
-            }
+            return country;
         }
 
-        public async Task DeleteCountry(int id)
+        public async Task<Country> UpdateCountryAsync(int id, UpdateCountryDTO countryDTO)
         {
-            try
+            var country = await _unitOfWork.Countries.GetAsync(q => q.Id == id);
+            if (country == null)
             {
-                var country = await _unitOfWork.Countries.Get(q => q.Id == id);
-                if (country == null)
-                {
-                    _logger.LogError($"Invalid Delete attempt in the {nameof(DeleteCountry)}");
-                    throw new System.NotImplementedException();
-                }
+                _logger.LogError($"Invalid UPDATE attempt in the {nameof(UpdateCountryAsync)}");
+                throw new KeyNotFoundException();
+            }
 
-                await _unitOfWork.Countries.Delete(id);
-                await _unitOfWork.Save();
-            }
-            catch (Exception ex)
+            _mapper.Map(countryDTO, country);
+            _unitOfWork.Countries.Update(country);
+            await _unitOfWork.SaveAsync();
+
+            return country;
+        }
+
+        public async Task DeleteCountryAsync(int id)
+        {
+            var country = await _unitOfWork.Countries.GetAsync(q => q.Id == id);
+            if (country == null)
             {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(DeleteCountry)}");
-                throw new System.NotImplementedException();
+                _logger.LogError($"Invalid Delete attempt in the {nameof(DeleteCountryAsync)}");
+                throw new KeyNotFoundException();
             }
+
+            await _unitOfWork.Countries.DeleteAsync(id);
+            await _unitOfWork.SaveAsync();
         }
     }
 }

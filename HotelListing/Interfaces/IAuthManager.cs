@@ -6,7 +6,7 @@ namespace HotelListing.Services
 {
     public interface IAuthManager
     {
-        Task<bool> ValidateUser(LoginUserDTO userDTO);
-        Task<string> CreateToken();
+        Task<bool> ValidateUserAsync(LoginUserDTO userDTO);
+        Task<string> CreateTokenAsync();
     }
 }

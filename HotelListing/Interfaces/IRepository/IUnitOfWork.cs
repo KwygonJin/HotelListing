@@ -10,6 +10,6 @@ namespace HotelListing.IRepository
 
         IGenericRepository<Hotel> Hotels { get; }
 
-        Task Save();
+        Task SaveAsync();
     }
 }

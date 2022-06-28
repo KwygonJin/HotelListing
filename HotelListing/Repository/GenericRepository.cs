@@ -1,4 +1,5 @@
 ﻿using HotelListing.Data;
+using HotelListing.DTO;
 using HotelListing.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace HotelListing.Repository
 {
@@ -21,7 +23,7 @@ namespace HotelListing.Repository
             _db = _context.Set<T>();
         }
 
-        public async Task Delete(int id)
+        public async Task DeleteAsync(int id)
         {
             var entity = await _db.FindAsync(id);
             _db.Remove(entity);
@@ -32,7 +34,7 @@ namespace HotelListing.Repository
             _db.RemoveRange(entities);
         }
 
-        public async Task<T> Get(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             IQueryable<T> query = _db;
             if (include != null)
@@ -42,7 +44,7 @@ namespace HotelListing.Repository
             return await query.AsNoTracking().FirstOrDefaultAsync(expression);
         }
 
-        public async Task<IList<T>> GetAll(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        public async Task<IList<T>> GetAllAsync(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             IQueryable<T> query = _db;
 
@@ -63,13 +65,27 @@ namespace HotelListing.Repository
 
             return await query.AsNoTracking().ToListAsync();
         }
+        public async Task<IPagedList<T>> GetPagedAsync(
+            RequestParams requestParams,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null
+            )
+        {
+            IQueryable<T> query = _db;
 
-        public async Task Insert(T entity)
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.AsNoTracking().ToPagedListAsync(requestParams.PageNumber, requestParams.PageSize);
+        }
+
+        public async Task InsertAsync(T entity)
         {
             await _db.AddAsync(entity);
         }
 
-        public async Task InsertRange(IEnumerable<T> entities)
+        public async Task InsertRangeAsync(IEnumerable<T> entities)
         {
             await _db.AddRangeAsync(entities);
         }
